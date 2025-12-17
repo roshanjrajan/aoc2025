@@ -46,17 +46,7 @@ def fetch_input(day: int, year: int, cookie: str) -> Path:
 
     day_dir = DATA_DIR / str(year) / f"day{day:02d}"
     day_dir.mkdir(parents=True, exist_ok=True)
-    part1_path = day_dir / "part1.txt"
-    part2_path = day_dir / "part2.txt"
-
-    target_path: Optional[Path]
-    if not part1_path.exists():
-        target_path = part1_path
-    elif not part2_path.exists():
-        target_path = part2_path
-    else:
-        print(f"Both parts already exist for day {day} ({year}).")
-        return part2_path
+    target_path = day_dir / "part1.txt"
 
     url = f"https://adventofcode.com/{year}/day/{day}/input"
     try:
@@ -76,6 +66,31 @@ def fetch_input(day: int, year: int, cookie: str) -> Path:
     target_path.write_bytes(resp.content)
     print(f"Wrote input to {target_path.relative_to(ROOT)}")
     return target_path
+
+
+def bootstrap_solution_file(day: int, year: int) -> Path:
+    """Create part1.py for a day from the template if it does not already exist."""
+    if day < 1 or day > 25:
+        raise SystemExit("Day must be between 1 and 25.")
+
+    day_dir = SOLUTIONS_DIR / f"day{day:02d}"
+    dest = day_dir / "part1.py"
+    if dest.exists():
+        return dest
+
+    template = SOLUTIONS_DIR / "template.py"
+    if not template.exists():
+        raise SystemExit(
+            f"Template not found: {template.relative_to(ROOT)}. "
+            "Add solutions/template.py to enable bootstrapping."
+        )
+
+    day_dir.mkdir(parents=True, exist_ok=True)
+    content = template.read_text()
+    content = content.replace("YEAR = 2025", f"YEAR = {year}")
+    dest.write_text(content)
+    print(f"Bootstrapped {dest.relative_to(ROOT)} from template.")
+    return dest
 
 
 def parse_args() -> argparse.Namespace:
@@ -255,6 +270,7 @@ def main() -> None:
     if args.command == "fetch":
         cookie = get_cookie(args.cookie)
         fetch_input(day=args.day, year=args.year, cookie=cookie)
+        bootstrap_solution_file(day=args.day, year=args.year)
     elif args.command == "execute":
         run_solution(day=args.day, part=args.part, run_tests=args.test)
     elif args.command == "copy-part":

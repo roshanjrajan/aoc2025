@@ -7,6 +7,8 @@
 - Copy part1 to part2 for a day: `uv run main.py copy-part --day <n> [--force]` (executing part 2 will auto-bootstrap if missing)
 - Automatically sync part2 from part1 while you edit: `uv run main.py sync-part2 --day <n> [--interval 1.0]`
 
+Input is stored once per day (`data/YYYY/dayXX/part1.txt`) and used by both parts.
+
 ## Adding inline tests to a solution
 Each `solutions/dayXX/partY.py` file has a `TESTS` list and `run_tests()` helper. Paste example input/expected pairs like:
 ```python
