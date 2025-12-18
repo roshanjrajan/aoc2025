@@ -9,7 +9,15 @@ ROOT = Path(__file__).resolve().parents[2]
 DAY_DIR = Path(__file__).resolve().parent
 DAY = DAY_DIR.name if DAY_DIR.name.startswith("day") else "dayXX"
 DATA_DIR = ROOT / "data" / str(YEAR) / DAY
-TESTS: list[tuple[str, int | str]] = []
+TESTS: list[tuple[str, int | str]] = [
+    (
+"""987654321111111
+811111111111119
+234234234234278
+818181911112111
+""",357
+    )
+]
 
 
 def read_input() -> list[str]:
@@ -27,8 +35,31 @@ def read_input() -> list[str]:
 
 
 def solve(lines: list[str]) -> int | str:
-    """Implement the solution for this part."""
-    raise NotImplementedError("Implement solve().")
+    """Implement the solution for this part.""" 
+    total = 0
+    print(lines)
+    for line in lines:
+        curr_max = 0
+        first: int = int(line[0])
+        second:int = int(line[1])
+
+        for i in range(2, len(line)):
+            line_i_int = int(line[i])
+            if line_i_int > second:
+                second = line_i_int
+
+            if line_i_int > first:
+                curr_max = max(curr_max, int(str(first) + str(second)))
+                if i + 1 < len(line):
+                    first, second = int(line[i]), int(line[i+1])
+
+
+        curr_max = max(curr_max, int(str(first) + str(second)))
+        total += curr_max
+        print(line, curr_max)
+    
+    return total
+
 
 
 def run_tests() -> None:

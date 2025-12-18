@@ -1,5 +1,7 @@
 from __future__ import annotations
 import argparse
+from cgitb import small
+from functools import reduce
 import sys
 from pathlib import Path
 
@@ -9,7 +11,15 @@ ROOT = Path(__file__).resolve().parents[2]
 DAY_DIR = Path(__file__).resolve().parent
 DAY = DAY_DIR.name if DAY_DIR.name.startswith("day") else "dayXX"
 DATA_DIR = ROOT / "data" / str(YEAR) / DAY
-TESTS: list[tuple[str, int | str]] = []
+TESTS: list[tuple[str, int | str]] = [
+    (
+"""987654321111111
+811111111111119
+234234234234278
+818181911112111
+""",3121910778619
+    )
+]
 
 
 def read_input() -> list[str]:
@@ -25,10 +35,36 @@ def read_input() -> list[str]:
 
     return part1.read_text().splitlines()
 
+def smallest_from_left(window: str) -> tuple[str, int]:
+    smallest, smallest_index = window[0], 0
+
+    for index, char in enumerate(window):
+        if char < smallest:
+            smallest = char
+            smallest_index = index
+    
+    return smallest, smallest_index
 
 def solve(lines: list[str]) -> int | str:
-    """Implement the solution for this part."""
-    raise NotImplementedError("Implement solve().")
+    """Implement the solution for this part.""" 
+    total = 0
+    for line in lines:
+        window: list[str] = [line[0]]
+        max_dropped = len(line) - 12
+
+        for char in line[1:]:
+            while window and char > window[-1] and max_dropped > 0:
+                window.pop()
+                max_dropped -= 1
+            window.append(char)
+
+        window = window[:12]
+        num = int("".join(window))
+        total += num
+        print(line, num)
+
+    return total
+
 
 
 def run_tests() -> None:
