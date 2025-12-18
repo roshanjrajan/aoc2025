@@ -9,7 +9,22 @@ ROOT = Path(__file__).resolve().parents[2]
 DAY_DIR = Path(__file__).resolve().parent
 DAY = DAY_DIR.name if DAY_DIR.name.startswith("day") else "dayXX"
 DATA_DIR = ROOT / "data" / str(YEAR) / DAY
-TESTS: list[tuple[str, int | str]] = []
+TESTS: list[tuple[str, int | str]] = [
+    (
+"""3-5
+10-14
+16-20
+12-18
+
+1
+5
+8
+11
+17
+32
+""",14
+    )
+]
 
 
 def read_input() -> list[str]:
@@ -25,11 +40,35 @@ def read_input() -> list[str]:
 
     return part1.read_text().splitlines()
 
-
 def solve(lines: list[str]) -> int | str:
-    """Implement the solution for this part."""
-    raise NotImplementedError("Implement solve().")
+    idx = 0
+    intervals: list[tuple[int, int]] = []
+    while lines[idx].strip() and idx < len(lines):
+        start, end = lines[idx].split("-")
+        idx += 1
+        intervals.append((int(start), int(end)))
 
+    
+    intervals.sort()
+    merged_intervals: list[tuple[int, int]] = []
+
+    for interval in intervals:
+        if not merged_intervals:
+            merged_intervals.append(interval)
+        
+        m_s, m_e = merged_intervals[-1]
+        i_s, i_e = interval
+
+        if m_s <= i_s <= m_e:
+            merged_intervals[-1] = (m_s, max(i_e, m_e))
+        else:
+            merged_intervals.append(interval)
+
+    length = 0
+    for (start, end) in merged_intervals:
+        length += end - start + 1
+    
+    return length
 
 def run_tests() -> None:
     if not TESTS:

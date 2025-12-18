@@ -9,7 +9,22 @@ ROOT = Path(__file__).resolve().parents[2]
 DAY_DIR = Path(__file__).resolve().parent
 DAY = DAY_DIR.name if DAY_DIR.name.startswith("day") else "dayXX"
 DATA_DIR = ROOT / "data" / str(YEAR) / DAY
-TESTS: list[tuple[str, int | str]] = []
+TESTS: list[tuple[str, int | str]] = [
+    (
+"""3-5
+10-14
+16-20
+12-18
+
+1
+5
+8
+11
+17
+32
+""",3
+    )
+]
 
 
 def read_input() -> list[str]:
@@ -25,11 +40,26 @@ def read_input() -> list[str]:
 
     return part1.read_text().splitlines()
 
-
 def solve(lines: list[str]) -> int | str:
-    """Implement the solution for this part."""
-    raise NotImplementedError("Implement solve().")
+    idx = 0
+    intervals: list[tuple[int, int]] = []
+    print(lines)
+    while lines[idx].strip() and idx < len(lines):
+        start, end = lines[idx].split("-")
+        idx += 1
+        intervals.append((int(start), int(end)))
 
+    idx += 1
+    count = 0
+    for line in lines[idx:]:
+        val = int(line)
+
+        for (start, end) in intervals:
+            if start <= val and val <= end:
+                count += 1
+                break
+    
+    return count
 
 def run_tests() -> None:
     if not TESTS:
